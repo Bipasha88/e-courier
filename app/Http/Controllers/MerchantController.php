@@ -24,6 +24,6 @@ class MerchantController extends Controller
     }
 
     public function storeOrder(Request $request){
-        dd(array_sum($request->prices));
+        dd($request->all());
     }
 }
