@@ -24,6 +24,7 @@ class CreateOrdersTable extends Migration
             $table->string('customer_phone');
             $table->string('customer_address');
             $table->string('cost');
+            $table->string('weight');
             $table->string('track_number');
             $table->string('delivery_status')->default("0");
             $table->string('pickup_status')->default("0");

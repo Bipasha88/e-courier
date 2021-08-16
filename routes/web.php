@@ -36,6 +36,12 @@ Route::prefix('admin')->middleware('auth')->group(function() {
 
         Route::get('/inactivateuser/{id}', [AdminController::class, 'inactivateUser'])
             ->name('inactivateuser');
+
+        Route::get('/createcourierservice', [AdminController::class, 'createCourierService'])
+            ->name('createcourierservice');
+
+        Route::post('/storecourierservice', [AdminController::class, 'storeCourierService'])
+            ->name('storecourierservice');
 });
 
 Route::prefix('merchant')->middleware('auth')->group(function() {

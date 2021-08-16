@@ -22,8 +22,8 @@
                         <div class="form-group row">
 
                             <div class="col-sm-6">
-                            <input type="text" class="form-control "
-                                   placeholder="Sender Name" name="sender_name" value="{{ $sender->name }}" required autofocus>
+                                <input type="text" class="form-control "
+                                       placeholder="Sender Name" name="sender_name" value="{{ $sender->name }}" required autofocus>
                             </div>
 
                             <div class="col-sm-6">
@@ -75,72 +75,41 @@
                             <div class="card-header">
                                 Products
                             </div>
-                            <?php $row_num=0;?>
-                            <div class="card-body">
-                                <div class="col-md-12">
-                                    <table class="table table-responsive">
-                                        <thead>
-                                        <tr>
-                                            <th>Product Name</th>
-                                            <th>Product Weight</th>
-                                            <th>Product Price</th>
-                                            <th>Courier Charge</th>
-                                            <th>Total</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody class="row_container">
 
-                                        <tr id="div_{{$row_num}}">
+                            <div class="card-body">
+                                <table class="table" id="products_table">
+                                    <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php $select2=5;?>
+                                    @foreach (old('products', ['']) as $index => $oldProduct)
+                                        <tr id="product{{ $index }}">
                                             <td>
-                                                <select class="form-control" name="productname[]" id="productname0" onclick="select2()">
+                                                <select class="form-control productname{{$select2}}" name="productname[]" id="productname{{$index}}" onclick="select2()">
                                                     @foreach($products as $product)
-                                                    <option>{{$product->name}}</option>
+                                                        <option>{{$product->name}}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="text" name="productweight[]" class="form-control" placeholder="">
-                                            </td>
-                                            <td>
-                                                <input type="text" name="productprice[]" class="form-control" placeholder="" id="quantity0">
-                                            </td>
-                                            <td>
-                                                <input type="text" name="couriercharge[]" class="form-control" placeholder="" id="unitprice0">
-                                            </td>
-                                            <td>
-                                                <input type="text" name="total[]" class="form-control total" placeholder="Total" id="total0" onclick="total()" style="cursor: pointer;" readonly>
-                                            </td>
-                                            <td>
-                                                <a href="javascript:0" class="btn btn-danger"><i class="fa fa-minus" onclick="$('#div_{{$row_num}}').remove();"></i></a>
+                                                <input type="number" name="quantities[]" class="form-control" value="{{ old('quantities.' . $index) ?? '1' }}" />
                                             </td>
                                         </tr>
-                                        </tbody>
-                                        <tbody>
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <a href="javascript:0" class="btn btn-success" onclick="addrow();"><i class="fa fa-plus"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td>
-                                                <strong>Sub Total:</strong>
-                                            </td>
-                                            <td>
-                                                <input type="text" onclick="totalsub();" name="subtotal" class="form-control" id="subtotal" value="0.00" readonly>
-                                            </td>
-                                            <td></td>
-                                        </tr>
+                                    @endforeach
+                                    <tr id="product{{ count(old('products', [''])) }}"></tr>
+                                    </tbody>
+                                </table>
 
-
-                                        </tbody>
-                                    </table>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="add_row" class="btn btn-default pull-left">+ Add Row</button>
+                                        <button id='delete_row' class="pull-right btn btn-danger">- Delete Row</button>
+                                    </div>
                                 </div>
-
                             </div>
                         </div>
                         <br>
@@ -161,21 +130,56 @@
 @section('scripts')
     <script src="/admintheme/dist/jautocalc.js"></script>
     <script src="/admintheme/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            let row_number = {{ count(old('products', [''])) }};
+            var SELECT2 = '{{$select2}}';
+
+            $("#add_row").click(function(e){
+                //e.preventDefault();
+                let new_row_number = row_number - 1;
+                $('#product' + row_number).html($('#product' + new_row_number).html()).find('td:first-child');
+                var html = "";
+                html += '<tr id="product' + (row_number + 1) + '">';
+                html += '<td>';
+                html += '<select class="form-control productname' + (row_number + 1) + '" name="productname[]" onclick="select2()"></select>';
+                html += '</td>';
+                html += '</tr>';
+                $('#products_table').append(html);
+                row_number++;
+                SELECT2++;
+                <?php $select2++?>
+            });
+            select2()
+            {
+                $(".productname" + SELECT2).select2({
+                    tags: true
+                });
+            }
+
+
+
+            $("#delete_row").click(function(e){
+                e.preventDefault();
+                if(row_number > 1){
+                    $("#product" + (row_number - 1)).html('');
+                    row_number--;
+                    SELECT2--;
+                }
+            });
+        });
+    </script>
 
     <script type="text/javascript">
-        var RowNum = '{{$row_num}}';
-
+        var RowNum = '';
         function total() {
             /*var quantity = document.getElementById("quantity").value;*/
             var quantity = $("#quantity" + RowNum).val();
-
             var unitprice = $("#unitprice" + RowNum).val();
-            var total = (parseInt(quantity) + parseInt(unitprice));
+            var total = (parseInt(quantity) * parseInt(unitprice));
             console.log(quantity,unitprice);
             console.log(total);
-
             $('#total' + RowNum).val(total);
-
         }
         function totalsub(){
             var total = 0;
@@ -190,39 +194,9 @@
             });
             console.log('true');
         }
-        function addrow(){
-            RowNum++;
-            var html = "";
-            html += '<tr id="div_'+RowNum+'">';
-            html +='<td>';
-            html +='<select class="form-control" name="productname[]" onclick="select2()" id="productname'+RowNum+'" > @foreach($products as $product)<option>{{$product->name}}</option> @endforeach </select>';
-            html +='</td>';
-            html +='<td>';
-            html +='<input type="text" name="productweight[]" class="form-control" placeholder="">';
-            html +='</td>';
-            html +='<td>';
-            html +='<input type="text" id="quantity'+RowNum+'" name="productprice[]" class="form-control" placeholder="">';
-            html +='</td>';
-            html +='<td>';
-            html +='<input type="text" id="unitprice'+RowNum+'" name="couriercharge[]" class="form-control" placeholder="">';
-            html +='</td>';
-            html +='<td>';
-            html +='<input type="text" name="total[]" class="form-control total" onclick="total()" placeholder="Total" id="total'+RowNum+'" style="cursor: pointer;" readonly>';
-            html +='</td>';
-            html +='<td>';
-            html +='<a href="javascript:0" id="medicine_name'+RowNum+'" class="btn btn-danger"><i class="fa fa-minus"  onclick="$(\'#div_'+RowNum+'\').remove();"></i></a>';
-            html +='</td>';
-            html +='</tr>';
-
-            $('.row_container').append(html);
-        }
-
-
-
     </script>
 
     <script type="text/javascript">
-
     </script>
 
 @endsection

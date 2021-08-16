@@ -72,6 +72,12 @@
                 <span>Users List</span></a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" href="{{route('createcourierservice')}}">
+                <i class="fas fa-hashtag"></i>
+                <span>Create Courier Service</span></a>
+        </li>
+
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
 

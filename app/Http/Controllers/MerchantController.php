@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CourierService;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,8 @@ class MerchantController extends Controller
     public function createOrder(){
         $sender = Auth::user();
         $products = Product::all();
-        return view('merchant.createOrder',compact('sender','products'));
+        $services = CourierService::all();
+        return view('merchant.createOrder',compact('sender','products','services'));
     }
 
     public function storeOrder(Request $request){

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CourierService;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -34,5 +35,18 @@ class AdminController extends Controller
         $user->status = "0";
         $user->save();
         return redirect()->route('userlist');
+    }
+
+    public function createCourierService(){
+        return view('admin.courier.createCourierService');
+    }
+
+    public function storeCourierService(Request $request){
+        CourierService::create([
+           "condition" => $request->condition,
+           "cost" => $request->cost,
+        ]);
+
+        return redirect()->route("admin.dashboard");
     }
 }
