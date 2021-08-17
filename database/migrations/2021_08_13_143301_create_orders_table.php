@@ -15,17 +15,17 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('sender_name');
-            $table->string('sender_email');
-            $table->string('sender_phone');
-            $table->string('sender_address');
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->string('customer_name');
             $table->string('customer_email')->nullable();
             $table->string('customer_phone');
             $table->string('customer_address');
-            $table->string('cost');
-            $table->string('weight');
-            $table->string('track_number');
+            $table->integer('courier_charge');
+            $table->integer('cost');
+            $table->string('track_number')->nullable();
             $table->string('delivery_status')->default("0");
             $table->string('pickup_status')->default("0");
             $table->timestamps();

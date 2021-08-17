@@ -23,6 +23,8 @@ class CreateOrderProductTable extends Migration
                 ->constrained('products')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->integer('weight');
+            $table->integer('price');
             $table->timestamps();
         });
     }

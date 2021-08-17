@@ -80,8 +80,9 @@
                                 <table class="table" id="products_table">
                                     <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
+                                        <th>Product Name</th>
+                                        <th>Product Weight</th>
+                                        <th>Product Price</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -89,27 +90,65 @@
                                     @foreach (old('products', ['']) as $index => $oldProduct)
                                         <tr id="product{{ $index }}">
                                             <td>
-                                                <select class="form-control productname{{$select2}}" name="productname[]" id="productname{{$index}}" onclick="select2()">
-                                                    @foreach($products as $product)
-                                                        <option>{{$product->name}}</option>
-                                                    @endforeach
-                                                </select>
+                                                <input type="text" name="products[]" class="form-control" value="{{ old('products.' . $index)  }}" />
                                             </td>
                                             <td>
-                                                <input type="number" name="quantities[]" class="form-control" value="{{ old('quantities.' . $index) ?? '1' }}" />
+                                                <input type="text" name="weights[]" class="form-control" value="{{ old('weights.' . $index) }}" />
+                                            </td>
+                                            <td>
+                                                <input type="text" name="prices[]" class="form-control prices" value="{{ old('prices.' . $index) }}" />
                                             </td>
                                         </tr>
                                     @endforeach
                                     <tr id="product{{ count(old('products', [''])) }}"></tr>
                                     </tbody>
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="1"></td>
+                                        <td>
+                                            <strong>Courier Charge</strong>
+                                        </td>
+                                        <td>
+                                            <select name="couriercharge" class="form-control" id="couriercharge">
+                                                @foreach($services as $service)
+                                                    <option value="{{$service->cost}}">{{$service->condition}}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="1"></td>
+                                        <td>
+                                            <strong>Sub Total:</strong>
+                                        </td>
+                                        <td>
+                                            <input type="text" onclick="totalsub();" name="subtotal" class="form-control" id="subtotal" value="0.00" readonly>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a id="add_row" class="btn btn-default pull-left">+ Add Row</a>
+
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a id='delete_row' class="pull-right btn btn-danger">- Delete Row</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
                                 </table>
 
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <button id="add_row" class="btn btn-default pull-left">+ Add Row</button>
-                                        <button id='delete_row' class="pull-right btn btn-danger">- Delete Row</button>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                         <br>
@@ -139,13 +178,7 @@
                 //e.preventDefault();
                 let new_row_number = row_number - 1;
                 $('#product' + row_number).html($('#product' + new_row_number).html()).find('td:first-child');
-                var html = "";
-                html += '<tr id="product' + (row_number + 1) + '">';
-                html += '<td>';
-                html += '<select class="form-control productname' + (row_number + 1) + '" name="productname[]" onclick="select2()"></select>';
-                html += '</td>';
-                html += '</tr>';
-                $('#products_table').append(html);
+                $('#products_table').append('<tr id="product' + (row_number + 1) + '"></tr>');
                 row_number++;
                 SELECT2++;
                 <?php $select2++?>
@@ -183,10 +216,13 @@
         }
         function totalsub(){
             var total = 0;
-            $('.total').each(function (index, element) {
+            $('.prices').each(function (index, element) {
                 total = total + parseFloat($(element).val());
             });
-            $('#subtotal').val(total);
+            var couriercharge = $("#couriercharge").val();
+            var subtotal = parseInt(total)+parseInt(couriercharge);
+
+            $('#subtotal').val(subtotal);
         }
         function select2() {
             $("#productname" + RowNum).select2({

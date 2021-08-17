@@ -10,14 +10,12 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'sender_name',
-        'sender_email',
-        'sender_phone',
-        'sender_address',
+        'user_id',
         'customer_name',
         'customer_email',
         'customer_phone',
         'customer_address',
+        'courier_charge',
         'cost',
         'track_number',
         'delivery_status',
@@ -26,6 +24,9 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class);
+        return $this->belongsToMany(Product::class)->withPivot('weight','price');
+    }
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }
